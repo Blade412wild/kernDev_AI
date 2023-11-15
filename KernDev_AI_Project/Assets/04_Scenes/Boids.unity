@@ -315,7 +315,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 158964634}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.618, y: 2.24, z: 0.01}
+  m_LocalPosition: {x: -1.52, y: 2.24, z: 0.67}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -335,6 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70f33e78ee78e164cbf1e4a0945c82a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collider: {fileID: 0}
   Force: 10
 --- !u!1001 &581954389
 PrefabInstance:
@@ -343,6 +344,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5173774036516082992, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5173774036516082994, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
       propertyPath: m_Name
       value: Boid 1
@@ -635,6 +640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70f33e78ee78e164cbf1e4a0945c82a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collider: {fileID: 0}
   Force: 10
 --- !u!1 &1270606239
 GameObject:
@@ -682,9 +688,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CenterSpawn: {fileID: 683884229}
-  SpawnRange: 30
+  SpawnRange: 20
   BoidPrefab: {fileID: 5173774036516082994, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
+  boid: {fileID: 2972800892037058590, guid: 27c68a38acc03a74c8805ddb3c41bc04, type: 3}
   AmountBoids: 60
+  Center: {fileID: 683884229}
+  NeighboursRadius: 2.5
 --- !u!114 &1270606242
 MonoBehaviour:
   m_ObjectHideFlags: 0
