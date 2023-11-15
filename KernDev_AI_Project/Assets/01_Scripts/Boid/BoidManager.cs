@@ -61,6 +61,11 @@ public class BoidManager : MonoBehaviour
             // regel Seperation
             CalculateSerpartion(neighbours, boid);
 
+            // regel allignment
+
+
+
+
 
         }
 
@@ -117,8 +122,9 @@ public class BoidManager : MonoBehaviour
             foreach (Transform _transform in _neigboursList)
             {
                 Vector3 moveDirection = _centerOfMass - _transform.position;
+                Vector3 currentVelocity = _transform.position + moveDirection.normalized * Time.deltaTime;
 
-                _transform.position = _transform.position + moveDirection.normalized * Time.deltaTime;
+                _transform.position = currentVelocity;
 
             }
 
@@ -156,8 +162,16 @@ public class BoidManager : MonoBehaviour
 
         _boid.position = _boid.position + moveAwayDirection * SeperationsStrenght; 
 
+    }
 
+    private void MatchSameVelocityFromNeigbours(List<Transform> _neigbourList)
+    {
+        Vector3 perceivedVector;
 
+        foreach(Transform _transform in _neigbourList)
+        {
+            
+        }
     }
 
 

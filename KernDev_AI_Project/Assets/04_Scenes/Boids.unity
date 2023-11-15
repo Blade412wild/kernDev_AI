@@ -627,13 +627,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CenterSpawn: {fileID: 683884229}
-  SpawnRange: 10
+  SpawnRange: 5
   BoidPrefab: {fileID: 5173774036516082996, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
-  AmountBoids: 135
+  AmountBoids: 40
   CenterPrefab: {fileID: 683884224}
   NeighboursRadius: 2.5
-  Speed: 2
-  SperationRadius: 3
+  SeperationsStrenght: 0.3
+  SperationRadius: 4
 --- !u!114 &1270606242
 MonoBehaviour:
   m_ObjectHideFlags: 0

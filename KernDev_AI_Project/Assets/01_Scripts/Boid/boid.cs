@@ -5,6 +5,7 @@ using UnityEngine;
 public class boid : MonoBehaviour
 {
     public Collider collider;
+    public Vector3 Velocity;
 
     [SerializeField] private int Force = 1;
     private int speed = 5;
