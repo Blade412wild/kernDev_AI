@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 using Unity.VisualScripting;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 public class BoidManager : MonoBehaviour
@@ -17,6 +19,7 @@ public class BoidManager : MonoBehaviour
     public GameObject CenterPrefab;
     public float NeighboursRadius = 5f;
     public float Speed = 0.1f;
+    public float SperationRadius = 3.0f;
 
 
     private List<boid> BoidList = new List<boid>();
@@ -48,9 +51,16 @@ public class BoidManager : MonoBehaviour
     {
         foreach (boid boid in BoidList)
         {
+            //finding neigbours
             List<Transform> neighbours = GetNearbyNeighbours(boid);
             Vector3 centerOfMass = CalculateAverageMass(neighbours);
+
+            // regel Cohesion
             CalculateMovementTowardsCenterOfNeigbours(neighbours, centerOfMass);
+
+            // regel Seperation
+            CalculateSerpartion(neighbours, boid);
+
 
         }
 
@@ -78,7 +88,7 @@ public class BoidManager : MonoBehaviour
         }
 
         Vector3 c = totalBoidsPos / _neigboursList.Count;
-        Debug.Log("the Total vector : " + totalBoidsPos + " | Center of the mass : " + c + "neigbourcount : " + _neigboursList.Count);
+        // Debug.Log("the Total vector : " + totalBoidsPos + " | Center of the mass : " + c + "neigbourcount : " + _neigboursList.Count);
 
         return c;
     }
@@ -108,25 +118,45 @@ public class BoidManager : MonoBehaviour
             {
                 Vector3 moveDirection = _centerOfMass - _transform.position;
 
-                _transform.position =_transform.position + moveDirection.normalized * Time.deltaTime;
-
-
-                RaycastHit hit;
-                // Does the ray intersect any objects excluding the player layer
-                if (Physics.Raycast(_transform.position, moveDirection, out hit, Mathf.Infinity))
-                {
-                    Debug.DrawRay(_transform.position, moveDirection * hit.distance, Color.yellow);
-                    Debug.Log("Did Hit");
-                }
-                else
-                {
-                    Debug.DrawRay(_transform.position, moveDirection * 2, Color.white);
-                    Debug.Log("Did not Hit");
-                }
+                _transform.position = _transform.position + moveDirection.normalized * Time.deltaTime;
 
             }
 
         }
+
+    }
+
+    private void CalculateSerpartion(List<Transform> _neigboursList, boid _boid)
+    {
+
+        for (int j = 0; j < _neigboursList.Count; j++)
+        {
+            Transform neigbour = _neigboursList[j];
+
+            //float DistanceBetweenEachNeigbour = Vector3.Distance(_boid.transform.position, neigbour.position);
+            float DistanceBetweenEachNeigbour = (_boid.transform.position - neigbour.position).sqrMagnitude;
+
+
+            Debug.Log("Distance between boid : " + _boid + " and his neigbour : " + j + " = " + DistanceBetweenEachNeigbour);
+
+            if(DistanceBetweenEachNeigbour < 1)
+            {
+                MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
+            }
+
+        }
+    }
+
+    private void MoveBoidAwayFromNeigbour(Transform _boid, Transform _neigbour)
+    {
+        Vector3 moveAwayDirection = new Vector3(0, 0, 0);
+
+        moveAwayDirection += _boid.position - _neigbour.position;
+        Debug.Log(moveAwayDirection);
+
+        _boid.position = _boid.position + moveAwayDirection * Speed; 
+
+
 
     }
 
