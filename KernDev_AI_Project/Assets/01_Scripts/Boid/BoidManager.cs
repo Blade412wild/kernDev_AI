@@ -16,6 +16,7 @@ public class BoidManager : MonoBehaviour
     public int AmountBoids = 3;
     public GameObject CenterPrefab;
     public float NeighboursRadius = 5f;
+    public float Speed = 0.1f;
 
 
     private List<boid> BoidList = new List<boid>();
@@ -49,10 +50,7 @@ public class BoidManager : MonoBehaviour
         {
             List<Transform> neighbours = GetNearbyNeighbours(boid);
             Vector3 centerOfMass = CalculateAverageMass(neighbours);
-            foreach (Transform _transform in neighbours)
-            {
-                _transform.position = centerOfMass;
-            }
+            CalculateMovementTowardsCenterOfNeigbours(neighbours, centerOfMass);
 
         }
 
@@ -68,32 +66,8 @@ public class BoidManager : MonoBehaviour
         return spawnPos;
     }
 
-    private Vector3 CalculateAverageDirection()
-    {
-        Vector3 averageDirection = new Vector3(0, 0, 0);
-
-        return averageDirection;
-    }
-    //private void CalculateAverageMass()
-    //{
-    //    Vector3 totalBoidsPos = new Vector3(0, 0, 0);
-    //    for (int i = 0; i < BoidList.Count; i++)
-    //    {
-    //        boid boid = BoidList[i];
-    //        Vector3 BoidPos = boid.transform.position;
-    //        totalBoidsPos = totalBoidsPos + BoidPos;
-    //        //Debug.Log(boid.transform.name + " positie = " + BoidPos);
-    //    }
-
-    //    c = totalBoidsPos / BoidList.Count;
-    //    Center.position = c;
-
-    //    //Debug.Log("CenterOfMass = " + c);
-    //}
-
     private Vector3 CalculateAverageMass(List<Transform> _neigboursList)
     {
-        Debug.Log(_neigboursList.Count);
         Vector3 totalBoidsPos = new Vector3(0, 0, 0);
         for (int i = 0; i < _neigboursList.Count; i++)
         {
@@ -103,19 +77,10 @@ public class BoidManager : MonoBehaviour
             //Debug.Log(boid.transform.name + " positie = " + BoidPos);
         }
 
-        
         Vector3 c = totalBoidsPos / _neigboursList.Count;
         Debug.Log("the Total vector : " + totalBoidsPos + " | Center of the mass : " + c + "neigbourcount : " + _neigboursList.Count);
 
-        //Debug.Log(c);
         return c;
-        //GameObject center;
-
-        //center = Instantiate(CenterPrefab, c, Quaternion.identity);
-
-        //center.transform.position = c;
-
-        //Debug.Log("CenterOfMass = " + c);
     }
 
     private List<Transform> GetNearbyNeighbours(boid _boid)
@@ -130,8 +95,38 @@ public class BoidManager : MonoBehaviour
                 neighbours.Add(collider.transform);
             }
         }
-        Debug.Log(neighbours.Count);
+        //Debug.Log(neighbours.Count);
         return neighbours;
+
+    }
+
+    private void CalculateMovementTowardsCenterOfNeigbours(List<Transform> _neigboursList, Vector3 _centerOfMass)
+    {
+        if (_neigboursList.Count != 0)
+        {
+            foreach (Transform _transform in _neigboursList)
+            {
+                Vector3 moveDirection = _centerOfMass - _transform.position;
+
+                _transform.position =_transform.position + moveDirection.normalized * Time.deltaTime;
+
+
+                RaycastHit hit;
+                // Does the ray intersect any objects excluding the player layer
+                if (Physics.Raycast(_transform.position, moveDirection, out hit, Mathf.Infinity))
+                {
+                    Debug.DrawRay(_transform.position, moveDirection * hit.distance, Color.yellow);
+                    Debug.Log("Did Hit");
+                }
+                else
+                {
+                    Debug.DrawRay(_transform.position, moveDirection * 2, Color.white);
+                    Debug.Log("Did not Hit");
+                }
+
+            }
+
+        }
 
     }
 

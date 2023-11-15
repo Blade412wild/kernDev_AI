@@ -227,7 +227,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!54 &158964635
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -344,13 +344,13 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5173774036516082992, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5173774036516082994, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
       propertyPath: m_Name
       value: Boid 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5173774036516082994, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5173774036516082999, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
       propertyPath: m_RootOrder
@@ -394,6 +394,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5173774036516082999, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5173774038035555027, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -443,7 +447,7 @@ SphereCollider:
   m_GameObject: {fileID: 683884224}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
@@ -532,7 +536,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!54 &796928201
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -688,12 +692,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CenterSpawn: {fileID: 683884229}
-  SpawnRange: 20
-  BoidPrefab: {fileID: 5173774036516082994, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
-  boid: {fileID: 2972800892037058590, guid: 27c68a38acc03a74c8805ddb3c41bc04, type: 3}
-  AmountBoids: 60
-  Center: {fileID: 683884229}
+  SpawnRange: 10
+  BoidPrefab: {fileID: 5173774036516082996, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
+  AmountBoids: 57
+  CenterPrefab: {fileID: 683884224}
   NeighboursRadius: 2.5
+  Speed: 2
 --- !u!114 &1270606242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -827,7 +831,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1478603813
 Transform:
   m_ObjectHideFlags: 0
@@ -934,7 +938,7 @@ MeshCollider:
   m_GameObject: {fileID: 2054854407}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
