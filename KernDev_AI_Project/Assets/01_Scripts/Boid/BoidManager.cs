@@ -18,8 +18,8 @@ public class BoidManager : MonoBehaviour
     public int AmountBoids = 3;
     public GameObject CenterPrefab;
     public float NeighboursRadius = 5f;
-    public float Speed = 0.1f;
-    public float SperationRadius = 3.0f;
+    public float SeperationsStrenght = 0.3f;
+    public float SperationRadius = 1.0f;
 
 
     private List<boid> BoidList = new List<boid>();
@@ -139,7 +139,7 @@ public class BoidManager : MonoBehaviour
 
             Debug.Log("Distance between boid : " + _boid + " and his neigbour : " + j + " = " + DistanceBetweenEachNeigbour);
 
-            if(DistanceBetweenEachNeigbour < 1)
+            if(DistanceBetweenEachNeigbour < SperationRadius)
             {
                 MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
             }
@@ -154,7 +154,7 @@ public class BoidManager : MonoBehaviour
         moveAwayDirection += _boid.position - _neigbour.position;
         Debug.Log(moveAwayDirection);
 
-        _boid.position = _boid.position + moveAwayDirection * Speed; 
+        _boid.position = _boid.position + moveAwayDirection * SeperationsStrenght; 
 
 
 
