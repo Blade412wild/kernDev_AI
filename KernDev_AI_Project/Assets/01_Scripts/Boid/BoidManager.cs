@@ -56,13 +56,13 @@ public class BoidManager : MonoBehaviour
             Vector3 centerOfMass = CalculateAverageMass(neighbours);
 
             // regel Cohesion
-            CalculateMovementTowardsCenterOfNeigbours(neighbours, centerOfMass);
+            Vector3 averageVelocity = CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(neighbours, centerOfMass);
 
             // regel Seperation
             CalculateSerpartion(neighbours, boid);
 
-            // regel allignment
-
+            // regel allignment (werkt niet)
+            MatchSameVelocityFromNeigbours(neighbours, averageVelocity);
 
 
 
@@ -115,8 +115,9 @@ public class BoidManager : MonoBehaviour
 
     }
 
-    private void CalculateMovementTowardsCenterOfNeigbours(List<Transform> _neigboursList, Vector3 _centerOfMass)
+    private Vector3 CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(List<Transform> _neigboursList, Vector3 _centerOfMass)
     {
+        Vector3 totalVelocity = new Vector3(0, 0, 0);
         if (_neigboursList.Count != 0)
         {
             foreach (Transform _transform in _neigboursList)
@@ -124,11 +125,16 @@ public class BoidManager : MonoBehaviour
                 Vector3 moveDirection = _centerOfMass - _transform.position;
                 Vector3 currentVelocity = _transform.position + moveDirection.normalized * Time.deltaTime;
 
+                totalVelocity = totalVelocity + currentVelocity;
                 _transform.position = currentVelocity;
 
             }
-
+            // bereken hier de velocity van elke boid en zet hem in een nieuwe lijst en return die en geef hem door aan regel 3
         }
+        Vector3 averageVelocity = totalVelocity / _neigboursList.Count;
+
+        
+        return averageVelocity;
 
     }
 
@@ -150,6 +156,7 @@ public class BoidManager : MonoBehaviour
                 MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
             }
 
+
         }
     }
 
@@ -164,13 +171,13 @@ public class BoidManager : MonoBehaviour
 
     }
 
-    private void MatchSameVelocityFromNeigbours(List<Transform> _neigbourList)
+    private void MatchSameVelocityFromNeigbours(List<Transform> _neigbourList, Vector3 _averageVelocityNeigbours)
     {
         Vector3 perceivedVector;
 
         foreach(Transform _transform in _neigbourList)
         {
-            
+            _transform.position =  _transform.position + _averageVelocityNeigbours .normalized * Time.deltaTime;
         }
     }
 

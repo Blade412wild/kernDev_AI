@@ -336,6 +336,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collider: {fileID: 0}
+  Velocity: {x: 0, y: 0, z: 0}
   Force: 10
 --- !u!1 &683884224
 GameObject:
@@ -580,6 +581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collider: {fileID: 0}
+  Velocity: {x: 0, y: 0, z: 0}
   Force: 10
 --- !u!1 &1270606239
 GameObject:
@@ -627,7 +629,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CenterSpawn: {fileID: 683884229}
-  SpawnRange: 5
+  SpawnRange: 10
   BoidPrefab: {fileID: 5173774036516082996, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
   AmountBoids: 40
   CenterPrefab: {fileID: 683884224}
