@@ -200,7 +200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 30185426}
   m_LocalRotation: {x: 0.20216133, y: -0, z: -0, w: 0.9793523}
-  m_LocalPosition: {x: 0, y: 6.01, z: -10}
+  m_LocalPosition: {x: 0, y: 20.22, z: -32.67}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -628,14 +628,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcea0a6fba6dfb94c888c6b15de63a78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MinX: -40
+  MaxX: 40
+  MinY: -40
+  MaxY: 40
+  MinZ: -40
+  MaxZ: 40
+  BoundryStrenght: 0
   CenterSpawn: {fileID: 683884229}
-  SpawnRange: 10
+  SpawnRange: 5
   BoidPrefab: {fileID: 5173774036516082996, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
   AmountBoids: 40
   CenterPrefab: {fileID: 683884224}
-  NeighboursRadius: 2.5
-  SeperationsStrenght: 0.3
-  SperationRadius: 4
+  NeighboursRadius: 3
+  SeperationsStrenght: 0.18
+  SperationRadius: 2
 --- !u!114 &1270606242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -940,7 +947,7 @@ Transform:
   m_GameObject: {fileID: 2054854407}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.9534, y: 2.9534, z: 2.9534}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

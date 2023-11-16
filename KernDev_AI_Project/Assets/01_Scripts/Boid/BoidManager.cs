@@ -6,9 +6,23 @@ using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BoidManager : MonoBehaviour
 {
+    [Header("WORLD Boundry")]
+    public int MinX = -40;
+    public int MaxX = 40;
+
+    public int MinY = -40;
+    public int MaxY = 40;
+
+    public int MinZ = -40;
+    public int MaxZ = 40;
+
+    public int BoundryStrenght;
+
+
     [Header("Spawning")]
     public Transform CenterSpawn;
     public float SpawnRange = 30.0f;
@@ -56,13 +70,16 @@ public class BoidManager : MonoBehaviour
             Vector3 centerOfMass = CalculateAverageMass(neighbours);
 
             // regel Cohesion
-            Vector3 averageVelocity = CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(neighbours, centerOfMass);
+            Vector3 averageVelocity = CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(neighbours, centerOfMass, boid);
 
             // regel Seperation
             CalculateSerpartion(neighbours, boid);
 
             // regel allignment (werkt niet)
             MatchSameVelocityFromNeigbours(neighbours, averageVelocity);
+
+            // keep them in a sertain boundary
+            //KeepboidInBoundary(boid);
 
 
 
@@ -115,7 +132,7 @@ public class BoidManager : MonoBehaviour
 
     }
 
-    private Vector3 CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(List<Transform> _neigboursList, Vector3 _centerOfMass)
+    private Vector3 CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(List<Transform> _neigboursList, Vector3 _centerOfMass, boid _boid)
     {
         Vector3 totalVelocity = new Vector3(0, 0, 0);
         if (_neigboursList.Count != 0)
@@ -130,6 +147,13 @@ public class BoidManager : MonoBehaviour
 
             }
             // bereken hier de velocity van elke boid en zet hem in een nieuwe lijst en return die en geef hem door aan regel 3
+        }
+        else
+        {
+            //// sommige boid hebben geen buren dus bewegen ze niet, nu gaan ze naar het midden toe om weer een groep te vormen
+            //Vector3 moveDirection = CenterSpawn.position - _boid.transform.position;
+            //Vector3 currentVelocity = _boid.transform.position + moveDirection.normalized * Time.deltaTime * 15;
+            //_boid.transform.position = currentVelocity;
         }
         Vector3 averageVelocity = totalVelocity / _neigboursList.Count;
 
@@ -149,7 +173,7 @@ public class BoidManager : MonoBehaviour
             float DistanceBetweenEachNeigbour = (_boid.transform.position - neigbour.position).sqrMagnitude;
 
 
-            Debug.Log("Distance between boid : " + _boid + " and his neigbour : " + j + " = " + DistanceBetweenEachNeigbour);
+            //Debug.Log("Distance between boid : " + _boid + " and his neigbour : " + j + " = " + DistanceBetweenEachNeigbour);
 
             if(DistanceBetweenEachNeigbour < SperationRadius)
             {
@@ -179,6 +203,44 @@ public class BoidManager : MonoBehaviour
         {
             _transform.position =  _transform.position + _averageVelocityNeigbours .normalized * Time.deltaTime;
         }
+    }
+
+    private void KeepboidInBoundary(boid _boid)
+    {
+        Vector3 boidPos = _boid.transform.position;
+        Vector3 boidVector = new Vector3(0,0,0);
+        if (boidPos.x < MinX)
+        {
+            boidVector = boidPos - (Vector3.left * BoundryStrenght);
+        }
+        else if(boidPos.x > MaxX)
+        {
+            boidVector = boidPos - (Vector3.right * BoundryStrenght);
+
+        }
+
+        if (boidPos.y < MinY)
+        {
+            boidVector = boidPos - (Vector3.down * BoundryStrenght);
+        }
+        else if (boidPos.y > MaxY)
+        {
+            boidVector = boidPos - (Vector3.up * BoundryStrenght);
+
+        }
+
+        if (boidPos.z < MinZ)
+        {
+            boidVector = boidPos - (Vector3.back * BoundryStrenght);
+        }
+        else if (boidPos.z > MaxZ)
+        {
+            boidVector = boidPos - (Vector3.forward * BoundryStrenght);
+        }
+
+        _boid.transform.position = _boid.transform.position + boidVector * Time.deltaTime;
+        Debug.Log(boidVector);
+
     }
 
 
