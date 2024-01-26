@@ -1,12 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography;
-using Unity.VisualScripting;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class BoidManager : MonoBehaviour
 {
@@ -80,8 +73,6 @@ public class BoidManager : MonoBehaviour
 
             // keep them in a sertain boundary
             //KeepboidInBoundary(boid);
-
-
 
 
         }
