@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -25,9 +26,11 @@ public class BoidManager2 : MonoBehaviour
     public boid BoidPrefab;
     public int AmountBoids = 3;
     public GameObject CenterPrefab;
-    public float NeighboursRadius = 5f;
-    public float SeperationsStrenght = 0.3f;
-    public float SperationRadius = 100.0f;
+
+    [SerializeField] private float cohesion = 100;
+    [SerializeField] private float seperation = 100;
+
+
 
     [SerializeField] private Transform PerceivedMassOfCenterPrefab;
     [SerializeField] private Transform MassOfCenterPrefab;
@@ -61,8 +64,8 @@ public class BoidManager2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.Space))
-        {
+        //if (Input.GetKey(KeyCode.Space))
+        //{
             Vector3 v1;
             Vector3 v2;
             Vector3 v3;
@@ -75,7 +78,7 @@ public class BoidManager2 : MonoBehaviour
                 MassOfCenterPrefab.position = centerOfMass;
                 PerceivedMassOfCenterPrefab.position = perceivedCenterOfMass;
                 v1 = perceivedCenterOfMass;
-                //v2 = 
+                v2 = rule2(boid, BoidList);
 
                 // regel Cohesion
                 //CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(BoidList, perceivedCenterOfMass, boid);
@@ -92,11 +95,11 @@ public class BoidManager2 : MonoBehaviour
 
 
                 //boid.Velocity = boid.Velocity + v1 + v2;
-                boid.transform.position = boid.transform.position + v1;
+                boid.transform.position = boid.transform.position + (v1 + v2);
 
             }
 
-        }
+        //}
 
     }
     private Vector3 rule1(boid _boidj, List<boid> _boids, Vector3 _centerOfMass)
@@ -143,8 +146,43 @@ public class BoidManager2 : MonoBehaviour
 
     private Vector3 rule2(boid _boidj, List<boid> _boids)
     {
-        return Vector3.zero;
+        Vector3 c = Vector3.zero;
+
+        foreach(boid _boid in _boids)
+        {
+            if(_boid != _boidj)
+            {
+                float DistanceBetweenEachNeigbour = (_boid.transform.position - _boidj.transform.position).sqrMagnitude;
+                if (DistanceBetweenEachNeigbour < seperation)
+                {
+                    //MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
+                    c = c - (_boid.transform.position - _boidj.transform.position);
+                }
+            }
+        }
+
+        return c;
     }
+    private Vector3 rule3(boid _boidj, List<boid> _boids)
+    {
+        Vector3 c = Vector3.zero;
+
+        foreach (boid _boid in _boids)
+        {
+            if (_boid != _boidj)
+            {
+                float DistanceBetweenEachNeigbour = (_boid.transform.position - _boidj.transform.position).sqrMagnitude;
+                if (DistanceBetweenEachNeigbour < seperation)
+                {
+                    //MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
+                    c = c - (_boid.transform.position - _boidj.transform.position);
+                }
+            }
+        }
+
+        return c;
+    }
+
 
 
     private Vector3 CalculateRandomSpawn()
@@ -192,25 +230,9 @@ public class BoidManager2 : MonoBehaviour
         perceivedCenterOfMass = perceivedCenterOfMass / (boidList.Count - 1);
 
         //return perceivedCenterOfMass;
-        return (perceivedCenterOfMass - _boidJ.transform.position) / 100;
+        return (perceivedCenterOfMass - _boidJ.transform.position) / cohesion;
     }
 
-    private List<Transform> GetNearbyNeighbours(boid _boid)
-    {
-        List<Transform> neighbours = new List<Transform>();
-        Collider[] neighboursColliders = Physics.OverlapSphere(_boid.transform.position, NeighboursRadius);
-
-        foreach (Collider collider in neighboursColliders)
-        {
-            if (collider != _boid.collider)
-            {
-                neighbours.Add(collider.transform);
-            }
-        }
-        //Debug.Log(neighbours.Count);
-        return neighbours;
-
-    }
 
     private Vector3 CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(List<boid> _neigboursList, Vector3 _centerOfMass, boid _boid)
     {
@@ -256,7 +278,7 @@ public class BoidManager2 : MonoBehaviour
 
             //Debug.Log("Distance between boid : " + _boid + " and his neigbour : " + j + " = " + DistanceBetweenEachNeigbour);
 
-            if (DistanceBetweenEachNeigbour < SperationRadius)
+            if (DistanceBetweenEachNeigbour < seperation)
             {
                 //MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
                 c = c - (neigbour.transform.position - _boid.transform.position);
@@ -267,16 +289,6 @@ public class BoidManager2 : MonoBehaviour
         return c;
     }
 
-    private void MoveBoidAwayFromNeigbour(Transform _boid, Transform _neigbour)
-    {
-        Vector3 moveAwayDirection = new Vector3(0, 0, 0);
-
-        moveAwayDirection += _boid.position - _neigbour.position;
-        Debug.Log(moveAwayDirection);
-
-        _boid.position = _boid.position + moveAwayDirection * SeperationsStrenght;
-
-    }
 
     private void MatchSameVelocityFromNeigbours(List<boid> _neigbourList, Vector3 _averageVelocityNeigbours)
     {
