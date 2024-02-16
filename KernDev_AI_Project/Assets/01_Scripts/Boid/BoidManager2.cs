@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -29,6 +30,11 @@ public class BoidManager2 : MonoBehaviour
 
     [SerializeField] private float cohesion = 100;
     [SerializeField] private float seperation = 100;
+    [SerializeField] private float SeperationStrenght = 10f;
+    [SerializeField] private float allignment = 8;
+
+
+
 
 
 
@@ -66,38 +72,34 @@ public class BoidManager2 : MonoBehaviour
     {
         //if (Input.GetKey(KeyCode.Space))
         //{
-            Vector3 v1;
-            Vector3 v2;
-            Vector3 v3;
-
-            foreach (boid boid in BoidList)
-            {
-                Vector3 centerOfMass = CalculateAverageMass(boid, BoidList);
-                Vector3 perceivedCenterOfMass = CalculatePerceivedAverageMass(boid, BoidList);
-
-                MassOfCenterPrefab.position = centerOfMass;
-                PerceivedMassOfCenterPrefab.position = perceivedCenterOfMass;
-                v1 = perceivedCenterOfMass;
-                v2 = rule2(boid, BoidList);
-
-                // regel Cohesion
-                //CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(BoidList, perceivedCenterOfMass, boid);
-
-                //v1 = rule1(boid, BoidList, centerOfMass);
-                // regel Seperation
-                //v2 = CalculateSerpartion(BoidList, boid);
-
-                // regel allignment (werkt niet)
-                //MatchSameVelocityFromNeigbours(BoidList, averageVelocity);
-
-                // keep them in a sertain boundary
-                //KeepboidInBoundary(boid);
+        Vector3 v1;
+        Vector3 v2;
+        Vector3 v3;
+        Vector3 v4;
 
 
-                //boid.Velocity = boid.Velocity + v1 + v2;
-                boid.transform.position = boid.transform.position + (v1 + v2);
 
-            }
+
+        foreach (boid boid in BoidList)
+        {
+            Vector3 centerOfMass = CalculateAverageMass(boid, BoidList);
+            Vector3 perceivedCenterOfMass = CalculatePerceivedAverageMass(boid, BoidList);
+
+            v1 = perceivedCenterOfMass;
+            v2 = rule2(boid, BoidList);
+            v3 = rule3(boid, BoidList);
+            v4 = KeepboidInBoundary(boid);
+
+            //boid.Velocity = boid.Velocity + v1 + v2+ v3;
+
+            //boid.transform.position = boid.transform.position + (v1);
+            boid.transform.position = boid.transform.position + (v1 + v2);
+            //boid.transform.position = boid.transform.position + (v1 + v2 + v3);
+            //boid.transform.position = boid.transform.position + (v1 + v2 + v3 + v4);
+
+            //boid.Velocity = boid.Velocity + v1;
+            //boid.transform.position = boid.transform.position + boid.Velocity;
+        }
 
         //}
 
@@ -148,25 +150,6 @@ public class BoidManager2 : MonoBehaviour
     {
         Vector3 c = Vector3.zero;
 
-        foreach(boid _boid in _boids)
-        {
-            if(_boid != _boidj)
-            {
-                float DistanceBetweenEachNeigbour = (_boid.transform.position - _boidj.transform.position).sqrMagnitude;
-                if (DistanceBetweenEachNeigbour < seperation)
-                {
-                    //MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
-                    c = c - (_boid.transform.position - _boidj.transform.position);
-                }
-            }
-        }
-
-        return c;
-    }
-    private Vector3 rule3(boid _boidj, List<boid> _boids)
-    {
-        Vector3 c = Vector3.zero;
-
         foreach (boid _boid in _boids)
         {
             if (_boid != _boidj)
@@ -180,7 +163,24 @@ public class BoidManager2 : MonoBehaviour
             }
         }
 
-        return c;
+        return c / SeperationStrenght;
+    }
+    private Vector3 rule3(boid _boidj, List<boid> _boids)
+    {
+        Vector3 perceivedVelocity = new Vector3(0, 0, 0);
+
+        foreach (boid boid in _boids)
+        {
+            if (boid != _boidj)
+            {
+                perceivedVelocity = perceivedVelocity + boid.Velocity;
+            }
+
+        }
+        perceivedVelocity = perceivedVelocity / (_boids.Count - 1);
+
+        //return perceivedCenterOfMass;
+        return (perceivedVelocity - _boidj.Velocity) / allignment;
     }
 
 
@@ -198,20 +198,15 @@ public class BoidManager2 : MonoBehaviour
     private Vector3 CalculateAverageMass(boid _boid, List<boid> boidList)
     {
         Vector3 totalBoidsPos = new Vector3(0, 0, 0);
-        Vector3 perceivedCenterOfMass = new Vector3(0, 0, 0);
-
         for (int i = 0; i < boidList.Count; i++)
         {
             Transform neiboursTransforms = boidList[i].transform;
             Vector3 neigbourPos = neiboursTransforms.position;
             totalBoidsPos = totalBoidsPos + neigbourPos;
-
-            //Debug.Log(boid.transform.name + " positie = " + BoidPos);
         }
 
         Vector3 c = totalBoidsPos / (boidList.Count);
-        //c = c - _boid.transform.position;
-        // Debug.Log("the Total vector : " + totalBoidsPos + " | Center of the mass : " + c + "neigbourcount : " + _neigboursList.Count);
+        MassOfCenterPrefab.position = c;
 
         return c;
     }
@@ -228,116 +223,47 @@ public class BoidManager2 : MonoBehaviour
 
         }
         perceivedCenterOfMass = perceivedCenterOfMass / (boidList.Count - 1);
+        PerceivedMassOfCenterPrefab.position = perceivedCenterOfMass;
+        //Debug.Log(perceivedCenterOfMass);
 
         //return perceivedCenterOfMass;
         return (perceivedCenterOfMass - _boidJ.transform.position) / cohesion;
     }
 
-
-    private Vector3 CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(List<boid> _neigboursList, Vector3 _centerOfMass, boid _boid)
-    {
-        Vector3 totalVelocity = new Vector3(0, 0, 0);
-        Vector3 moveDirection = new Vector3(0, 0, 0);
-
-        if (_neigboursList.Count != 0)
-        {
-            foreach (boid boid in _neigboursList)
-            {
-                moveDirection = _centerOfMass - _boid.transform.position;
-                Vector3 currentVelocity = _boid.transform.position + moveDirection.normalized * Time.deltaTime;
-
-                totalVelocity = totalVelocity + currentVelocity;
-                _boid.transform.position = currentVelocity;
-
-
-
-
-            }
-            // bereken hier de velocity van elke boid en zet hem in een nieuwe lijst en return die en geef hem door aan regel 3
-        }
-        Vector3 averageVelocity = totalVelocity / _neigboursList.Count;
-
-        Debug.Log("movedirection = " + moveDirection);
-        Debug.Log("totalVelocity = " + totalVelocity);
-        Debug.Log("averageVelocity = " + averageVelocity);
-        return averageVelocity;
-
-    }
-
-    private Vector3 CalculateSerpartion(List<boid> _neigboursList, boid _boid)
-    {
-        Vector3 c = new Vector3(0, 0, 0);
-
-        for (int j = 0; j < _neigboursList.Count; j++)
-        {
-            Transform neigbour = _neigboursList[j].transform;
-
-            //float DistanceBetweenEachNeigbour = Vector3.Distance(_boid.transform.position, neigbour.position);
-            float DistanceBetweenEachNeigbour = (_boid.transform.position - neigbour.position).sqrMagnitude;
-
-
-            //Debug.Log("Distance between boid : " + _boid + " and his neigbour : " + j + " = " + DistanceBetweenEachNeigbour);
-
-            if (DistanceBetweenEachNeigbour < seperation)
-            {
-                //MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
-                c = c - (neigbour.transform.position - _boid.transform.position);
-            }
-
-
-        }
-        return c;
-    }
-
-
-    private void MatchSameVelocityFromNeigbours(List<boid> _neigbourList, Vector3 _averageVelocityNeigbours)
-    {
-        Vector3 perceivedVector;
-
-        foreach (boid _boid in _neigbourList)
-        {
-            _boid.transform.position = _boid.transform.position + _averageVelocityNeigbours.normalized * Time.deltaTime;
-        }
-    }
-
-    private void KeepboidInBoundary(boid _boid)
+    private Vector3 KeepboidInBoundary(boid _boid)
     {
         Vector3 boidPos = _boid.transform.position;
-        Vector3 boidVector = new Vector3(0, 0, 0);
+        Vector3 vector = new Vector3(0, 0, 0);
+
         if (boidPos.x < MinX)
         {
-            boidVector = boidPos - (Vector3.left * BoundryStrenght);
+            vector.x =  BoundryStrenght * 1;
         }
         else if (boidPos.x > MaxX)
         {
-            boidVector = boidPos - (Vector3.right * BoundryStrenght);
+            vector.x = BoundryStrenght * -1;
 
         }
 
         if (boidPos.y < MinY)
         {
-            boidVector = boidPos - (Vector3.down * BoundryStrenght);
+            vector.y = BoundryStrenght * 1;
         }
         else if (boidPos.y > MaxY)
         {
-            boidVector = boidPos - (Vector3.up * BoundryStrenght);
-
+            vector.y = BoundryStrenght * -1;
         }
 
         if (boidPos.z < MinZ)
         {
-            boidVector = boidPos - (Vector3.back * BoundryStrenght);
+            vector.z = BoundryStrenght * 1;
         }
         else if (boidPos.z > MaxZ)
         {
-            boidVector = boidPos - (Vector3.forward * BoundryStrenght);
+            vector.z = BoundryStrenght * -1;
         }
-
-        _boid.transform.position = _boid.transform.position + boidVector * Time.deltaTime;
-        Debug.Log(boidVector);
+        
+        return vector;
 
     }
-
-
-
 }

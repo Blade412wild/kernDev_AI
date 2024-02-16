@@ -20,7 +20,8 @@ public class boid : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        //Velocity = rb.velocity;
+        //rb.AddForce(Vector3.fwd * 1/10);
     }
 
     private void FixedUpdate()

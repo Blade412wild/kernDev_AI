@@ -418,15 +418,16 @@ MonoBehaviour:
   MaxY: 40
   MinZ: -40
   MaxZ: 40
-  BoundryStrenght: 1000
+  BoundryStrenght: 10
   CenterSpawn: {fileID: 683884229}
   SpawnRange: 15
   BoidPrefab: {fileID: 5173774036516082996, guid: d9627db8355d7ba499559f0560b90cd5, type: 3}
-  AmountBoids: 6
+  AmountBoids: 5
   CenterPrefab: {fileID: 683884224}
-  NeighboursRadius: 100
-  SeperationsStrenght: 1
-  SperationRadius: 1
+  cohesion: 500
+  seperation: 1.9
+  SeperationStrenght: 500
+  allignment: 8
   PerceivedMassOfCenterPrefab: {fileID: 1719745076}
   MassOfCenterPrefab: {fileID: 2103900358}
 --- !u!1 &1719745071
