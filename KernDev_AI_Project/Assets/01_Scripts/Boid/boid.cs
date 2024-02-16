@@ -20,7 +20,10 @@ public class boid : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Velocity = rb.velocity;
+        //transform.position = transform.position + Vector3.fwd * 5 * Time.deltaTime;
+        transform.position += transform.TransformDirection(Vector3.fwd) * 5 * Time.deltaTime;
+
+        Velocity = rb.velocity;
         //rb.AddForce(Vector3.fwd * 1/10);
     }
 

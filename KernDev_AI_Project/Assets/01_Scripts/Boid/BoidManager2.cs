@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -17,6 +18,8 @@ public class BoidManager2 : MonoBehaviour
     public int MaxZ = 40;
 
     public int BoundryStrenght;
+    public float turnStrenght;
+    public int changeDirectionDistance = 15;
 
 
     [Header("Spawning")]
@@ -89,13 +92,23 @@ public class BoidManager2 : MonoBehaviour
             v2 = rule2(boid, BoidList);
             v3 = rule3(boid, BoidList);
             v4 = KeepboidInBoundary(boid);
+            avoidObstable(boid);
+            //transform.position += transform.TransformDirection(perceivedCenterOfMass) * 5 * Time.deltaTime;
+
+            //boid.transform.Rotate(0.0f, turnStrenght, 0.0f, Space.Self);
+
 
             //boid.Velocity = boid.Velocity + v1 + v2+ v3;
 
             //boid.transform.position = boid.transform.position + (v1);
-            boid.transform.position = boid.transform.position + (v1 + v2);
+            //boid.transform.position = boid.transform.position + (v1 + v2);
             //boid.transform.position = boid.transform.position + (v1 + v2 + v3);
-            //boid.transform.position = boid.transform.position + (v1 + v2 + v3 + v4);
+            Vector3 newDirection = v1 + v2 + v3 + v4;
+            //Vector3 lookDirection = newDirection - boid.transform.position;
+            //Quaternion rotation = Quaternion.LookRotation(lookDirection);
+            //boid.transform.rotation = rotation;
+            boid.transform.position = boid.transform.position + newDirection;
+
 
             //boid.Velocity = boid.Velocity + v1;
             //boid.transform.position = boid.transform.position + boid.Velocity;
@@ -237,10 +250,12 @@ public class BoidManager2 : MonoBehaviour
 
         if (boidPos.x < MinX)
         {
-            vector.x =  BoundryStrenght * 1;
+            _boid.transform.Rotate(0.0f, turnStrenght, 0.0f, Space.World);
+            vector.x = BoundryStrenght * 1;
         }
         else if (boidPos.x > MaxX)
         {
+            _boid.transform.Rotate(0.0f, turnStrenght, 0.0f, Space.World);
             vector.x = BoundryStrenght * -1;
 
         }
@@ -256,14 +271,36 @@ public class BoidManager2 : MonoBehaviour
 
         if (boidPos.z < MinZ)
         {
+            _boid.transform.Rotate(0.0f, turnStrenght, 0.0f, Space.World);
             vector.z = BoundryStrenght * 1;
         }
         else if (boidPos.z > MaxZ)
         {
+            _boid.transform.Rotate(0.0f, turnStrenght, 0.0f, Space.World);
             vector.z = BoundryStrenght * -1;
         }
-        
+
         return vector;
 
     }
+
+    private void avoidObstable(boid _boid)
+    {
+        RaycastHit hit;
+        // Does the ray intersect any objects excluding the player layer
+        if (Physics.Raycast(_boid.transform.position, _boid.transform.TransformDirection(Vector3.forward), out hit, changeDirectionDistance))
+        {
+            Debug.DrawRay(_boid.transform.position, _boid.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            _boid.transform.Rotate(0.0f, turnStrenght, 0.0f, Space.World);
+
+            Debug.Log("Did Hit");
+
+        }
+        else
+        {
+            Debug.DrawRay(_boid.transform.position, _boid.transform.TransformDirection(Vector3.forward) * 1000, Color.white);
+            Debug.Log("Did not Hit");
+        }
+    }
+
 }
