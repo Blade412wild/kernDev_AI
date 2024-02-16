@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BoidManager2 : MonoBehaviour
 {
@@ -26,7 +27,11 @@ public class BoidManager2 : MonoBehaviour
     public GameObject CenterPrefab;
     public float NeighboursRadius = 5f;
     public float SeperationsStrenght = 0.3f;
-    public float SperationRadius = 1.0f;
+    public float SperationRadius = 100.0f;
+
+    [SerializeField] private Transform PerceivedMassOfCenterPrefab;
+    [SerializeField] private Transform MassOfCenterPrefab;
+
 
 
     private List<boid> BoidList = new List<boid>();
@@ -58,30 +63,86 @@ public class BoidManager2 : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
+            Vector3 v1;
+            Vector3 v2;
+            Vector3 v3;
+
             foreach (boid boid in BoidList)
             {
-                //finding neigbours
-                //List<Transform> neighbours = GetNearbyNeighbours(boid);
-                Vector3 centerOfMass = CalculateAverageMass(BoidList);
+                Vector3 centerOfMass = CalculateAverageMass(boid, BoidList);
+                Vector3 perceivedCenterOfMass = CalculatePerceivedAverageMass(boid, BoidList);
+
+                MassOfCenterPrefab.position = centerOfMass;
+                PerceivedMassOfCenterPrefab.position = perceivedCenterOfMass;
+
 
                 // regel Cohesion
-                Vector3 averageVelocity = CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(BoidList, centerOfMass, boid);
+                v1 = CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(BoidList, perceivedCenterOfMass, boid);
 
+                //v1 = rule1(boid, BoidList, centerOfMass);
                 // regel Seperation
-                //CalculateSerpartion(neighbours, boid);
+                //v2 = CalculateSerpartion(BoidList, boid);
 
                 // regel allignment (werkt niet)
-                //MatchSameVelocityFromNeigbours(neighbours, averageVelocity);
+                //MatchSameVelocityFromNeigbours(BoidList, averageVelocity);
 
                 // keep them in a sertain boundary
                 //KeepboidInBoundary(boid);
 
+
+                //boid.Velocity = boid.Velocity + v1 + v2;
+                //boid.transform.position = boid.transform.position + v1 * Time.deltaTime;
 
             }
 
         }
 
     }
+
+    private Vector3 rule1(boid _boidj, List<boid> _boids, Vector3 _centerOfMass)
+    {
+        Vector3 totalVelocity = new Vector3(0, 0, 0);
+
+        if (_boids.Count != 0)
+        {
+            Vector3 moveDirection = Vector3.zero;
+            foreach (boid _boid in _boids)
+            {
+                moveDirection = _centerOfMass - _boid.transform.position;
+                Vector3 currentVelocity = _boid.transform.position + moveDirection.normalized; //* Time.deltaTime;
+
+                totalVelocity = totalVelocity + currentVelocity;
+                _boid.transform.position = currentVelocity;
+                moveDirection = totalVelocity;
+
+                RaycastHit hit;
+                // Does the ray intersect any objects excluding the player layer
+                if (Physics.Raycast(_boid.transform.position, _boid.transform.position - currentVelocity, out hit, Mathf.Infinity))
+                {
+                    Debug.DrawRay(_boid.transform.position, _boid.transform.position - currentVelocity * hit.distance, Color.yellow);
+                    //Debug.Log("Did Hit");
+                }
+                else
+                {
+                    Debug.DrawRay(_boid.transform.position, _boid.transform.position - currentVelocity * 1000, Color.white);
+                    //Debug.Log("Did not Hit");
+                }
+            }
+            //return moveDirection;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 averageVelocity = totalVelocity / _boids.Count;
+
+        return averageVelocity;
+
+    }
+
+
+
 
     private Vector3 CalculateRandomSpawn()
     {
@@ -93,18 +154,45 @@ public class BoidManager2 : MonoBehaviour
         return spawnPos;
     }
 
-    private Vector3 CalculateAverageMass(List<boid> _neigboursList)
+    private Vector3 CalculateAverageMass(boid _boid, List<boid> boidList)
     {
         Vector3 totalBoidsPos = new Vector3(0, 0, 0);
-        for (int i = 0; i < _neigboursList.Count; i++)
+        Vector3 perceivedCenterOfMass = new Vector3(0, 0, 0);
+
+        for (int i = 0; i < boidList.Count; i++)
         {
-            Transform neiboursTransforms = _neigboursList[i].transform;
+            Transform neiboursTransforms = boidList[i].transform;
             Vector3 neigbourPos = neiboursTransforms.position;
             totalBoidsPos = totalBoidsPos + neigbourPos;
+
             //Debug.Log(boid.transform.name + " positie = " + BoidPos);
         }
 
-        Vector3 c = totalBoidsPos / _neigboursList.Count;
+        Vector3 c = totalBoidsPos / (boidList.Count);
+        //c = c - _boid.transform.position;
+        // Debug.Log("the Total vector : " + totalBoidsPos + " | Center of the mass : " + c + "neigbourcount : " + _neigboursList.Count);
+
+        return c;
+    }
+    private Vector3 CalculatePerceivedAverageMass(boid _boidJ, List<boid> boidList)
+    {
+        Vector3 totalBoidsPos = new Vector3(0, 0, 0);
+        Vector3 perceivedCenterOfMass = new Vector3(0, 0, 0);
+
+
+        foreach (boid boid in boidList)
+        {
+            if (boid != _boidJ)
+            {
+                perceivedCenterOfMass = perceivedCenterOfMass + boid.transform.position;
+            }
+
+        }
+        perceivedCenterOfMass = perceivedCenterOfMass / (boidList.Count - 1);
+        return perceivedCenterOfMass;
+
+        Vector3 c = totalBoidsPos / (boidList.Count);
+        //c = c - _boid.transform.position;
         // Debug.Log("the Total vector : " + totalBoidsPos + " | Center of the mass : " + c + "neigbourcount : " + _neigboursList.Count);
 
         return c;
@@ -130,39 +218,40 @@ public class BoidManager2 : MonoBehaviour
     private Vector3 CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(List<boid> _neigboursList, Vector3 _centerOfMass, boid _boid)
     {
         Vector3 totalVelocity = new Vector3(0, 0, 0);
+        Vector3 moveDirection = new Vector3(0, 0, 0);
+
         if (_neigboursList.Count != 0)
         {
             foreach (boid boid in _neigboursList)
             {
-                Vector3 moveDirection = _centerOfMass - _boid.transform.position;
+                moveDirection = _centerOfMass - _boid.transform.position;
                 Vector3 currentVelocity = _boid.transform.position + moveDirection.normalized * Time.deltaTime;
 
                 totalVelocity = totalVelocity + currentVelocity;
                 _boid.transform.position = currentVelocity;
 
+
+
+
             }
             // bereken hier de velocity van elke boid en zet hem in een nieuwe lijst en return die en geef hem door aan regel 3
         }
-        else
-        {
-            //// sommige boid hebben geen buren dus bewegen ze niet, nu gaan ze naar het midden toe om weer een groep te vormen
-            //Vector3 moveDirection = CenterSpawn.position - _boid.transform.position;
-            //Vector3 currentVelocity = _boid.transform.position + moveDirection.normalized * Time.deltaTime * 15;
-            //_boid.transform.position = currentVelocity;
-        }
         Vector3 averageVelocity = totalVelocity / _neigboursList.Count;
 
-
+        Debug.Log("movedirection = " + moveDirection);
+        Debug.Log("totalVelocity = " + totalVelocity);
+        Debug.Log("averageVelocity = " + averageVelocity);
         return averageVelocity;
 
     }
 
-    private void CalculateSerpartion(List<Transform> _neigboursList, boid _boid)
+    private Vector3 CalculateSerpartion(List<boid> _neigboursList, boid _boid)
     {
+        Vector3 c = new Vector3(0, 0, 0);
 
         for (int j = 0; j < _neigboursList.Count; j++)
         {
-            Transform neigbour = _neigboursList[j];
+            Transform neigbour = _neigboursList[j].transform;
 
             //float DistanceBetweenEachNeigbour = Vector3.Distance(_boid.transform.position, neigbour.position);
             float DistanceBetweenEachNeigbour = (_boid.transform.position - neigbour.position).sqrMagnitude;
@@ -172,11 +261,13 @@ public class BoidManager2 : MonoBehaviour
 
             if (DistanceBetweenEachNeigbour < SperationRadius)
             {
-                MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
+                //MoveBoidAwayFromNeigbour(_boid.transform, neigbour);
+                c = c - (neigbour.transform.position - _boid.transform.position);
             }
 
 
         }
+        return c;
     }
 
     private void MoveBoidAwayFromNeigbour(Transform _boid, Transform _neigbour)
@@ -190,13 +281,13 @@ public class BoidManager2 : MonoBehaviour
 
     }
 
-    private void MatchSameVelocityFromNeigbours(List<Transform> _neigbourList, Vector3 _averageVelocityNeigbours)
+    private void MatchSameVelocityFromNeigbours(List<boid> _neigbourList, Vector3 _averageVelocityNeigbours)
     {
         Vector3 perceivedVector;
 
-        foreach (Transform _transform in _neigbourList)
+        foreach (boid _boid in _neigbourList)
         {
-            _transform.position = _transform.position + _averageVelocityNeigbours.normalized * Time.deltaTime;
+            _boid.transform.position = _boid.transform.position + _averageVelocityNeigbours.normalized * Time.deltaTime;
         }
     }
 
