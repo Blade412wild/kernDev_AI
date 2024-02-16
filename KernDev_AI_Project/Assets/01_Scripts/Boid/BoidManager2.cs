@@ -74,10 +74,11 @@ public class BoidManager2 : MonoBehaviour
 
                 MassOfCenterPrefab.position = centerOfMass;
                 PerceivedMassOfCenterPrefab.position = perceivedCenterOfMass;
-
+                v1 = perceivedCenterOfMass;
+                //v2 = 
 
                 // regel Cohesion
-                v1 = CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(BoidList, perceivedCenterOfMass, boid);
+                //CalculateMovementTowardsCenterOfNeigboursAndAverageVolicity(BoidList, perceivedCenterOfMass, boid);
 
                 //v1 = rule1(boid, BoidList, centerOfMass);
                 // regel Seperation
@@ -91,14 +92,13 @@ public class BoidManager2 : MonoBehaviour
 
 
                 //boid.Velocity = boid.Velocity + v1 + v2;
-                //boid.transform.position = boid.transform.position + v1 * Time.deltaTime;
+                boid.transform.position = boid.transform.position + v1;
 
             }
 
         }
 
     }
-
     private Vector3 rule1(boid _boidj, List<boid> _boids, Vector3 _centerOfMass)
     {
         Vector3 totalVelocity = new Vector3(0, 0, 0);
@@ -141,7 +141,10 @@ public class BoidManager2 : MonoBehaviour
 
     }
 
-
+    private Vector3 rule2(boid _boidj, List<boid> _boids)
+    {
+        return Vector3.zero;
+    }
 
 
     private Vector3 CalculateRandomSpawn()
@@ -176,9 +179,7 @@ public class BoidManager2 : MonoBehaviour
     }
     private Vector3 CalculatePerceivedAverageMass(boid _boidJ, List<boid> boidList)
     {
-        Vector3 totalBoidsPos = new Vector3(0, 0, 0);
         Vector3 perceivedCenterOfMass = new Vector3(0, 0, 0);
-
 
         foreach (boid boid in boidList)
         {
@@ -189,13 +190,9 @@ public class BoidManager2 : MonoBehaviour
 
         }
         perceivedCenterOfMass = perceivedCenterOfMass / (boidList.Count - 1);
-        return perceivedCenterOfMass;
 
-        Vector3 c = totalBoidsPos / (boidList.Count);
-        //c = c - _boid.transform.position;
-        // Debug.Log("the Total vector : " + totalBoidsPos + " | Center of the mass : " + c + "neigbourcount : " + _neigboursList.Count);
-
-        return c;
+        //return perceivedCenterOfMass;
+        return (perceivedCenterOfMass - _boidJ.transform.position) / 100;
     }
 
     private List<Transform> GetNearbyNeighbours(boid _boid)
