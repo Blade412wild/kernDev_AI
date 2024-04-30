@@ -36,15 +36,8 @@ public class BoidManager2 : MonoBehaviour
     [SerializeField] private float SeperationStrenght = 10f;
     [SerializeField] private float allignment = 8;
 
-
-
-
-
-
     [SerializeField] private Transform PerceivedMassOfCenterPrefab;
     [SerializeField] private Transform MassOfCenterPrefab;
-
-
 
     private List<boid> BoidList = new List<boid>();
 
@@ -63,18 +56,11 @@ public class BoidManager2 : MonoBehaviour
             boid Boid = Instantiate(BoidPrefab, SpawnPos, Quaternion.identity);
             BoidList.Add(Boid);
         }
-
-        foreach (boid Boid in BoidList)
-        {
-
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetKey(KeyCode.Space))
-        //{
         Vector3 v1;
         Vector3 v2;
         Vector3 v3;
@@ -82,81 +68,19 @@ public class BoidManager2 : MonoBehaviour
 
         foreach (boid boid in BoidList)
         {
-            Vector3 centerOfMass = CalculateAverageMass(boid, BoidList);
             Vector3 perceivedCenterOfMass = CalculatePerceivedAverageMass(boid, BoidList);
 
             v1 = perceivedCenterOfMass;
-            v2 = rule2Cohesion(boid, BoidList);
+            v2 = Seperation(boid, BoidList);
             v3 = Allignment(boid, BoidList);
             v4 = KeepboidInBoundary(boid);
             avoidObstable(boid);
-            //transform.position += transform.TransformDirection(perceivedCenterOfMass) * 5 * Time.deltaTime;
 
-            //boid.transform.Rotate(0.0f, turnStrenght, 0.0f, Space.Self);
-
-
-            //boid.Velocity = boid.Velocity + v1 + v2+ v3;
-
-            //boid.transform.position = boid.transform.position + (v1);
-            //boid.transform.position = boid.transform.position + (v1 + v2);
-            //boid.transform.position = boid.transform.position + (v1 + v2 + v3);
             Vector3 newDirection = v1 + v2 + v3 + v4;
-            //Vector3 lookDirection = newDirection - boid.transform.position;
-            //Quaternion rotation = Quaternion.LookRotation(lookDirection);
-            //boid.transform.rotation = rotation;
             boid.transform.position = boid.transform.position + newDirection;
-
-
-            //boid.Velocity = boid.Velocity + v1;
-            //boid.transform.position = boid.transform.position + boid.Velocity;
         }
-
-        //}
-
     }
-    private Vector3 rule1(boid _boidj, List<boid> _boids, Vector3 _centerOfMass)
-    {
-        Vector3 totalVelocity = new Vector3(0, 0, 0);
-
-        if (_boids.Count != 0)
-        {
-            Vector3 moveDirection = Vector3.zero;
-            foreach (boid _boid in _boids)
-            {
-                moveDirection = _centerOfMass - _boid.transform.position;
-                Vector3 currentVelocity = _boid.transform.position + moveDirection.normalized; //* Time.deltaTime;
-
-                totalVelocity = totalVelocity + currentVelocity;
-                _boid.transform.position = currentVelocity;
-                moveDirection = totalVelocity;
-
-                RaycastHit hit;
-                // Does the ray intersect any objects excluding the player layer
-                if (Physics.Raycast(_boid.transform.position, _boid.transform.position - currentVelocity, out hit, Mathf.Infinity))
-                {
-                    Debug.DrawRay(_boid.transform.position, _boid.transform.position - currentVelocity * hit.distance, Color.yellow);
-                    //Debug.Log("Did Hit");
-                }
-                else
-                {
-                    Debug.DrawRay(_boid.transform.position, _boid.transform.position - currentVelocity * 1000, Color.white);
-                    //Debug.Log("Did not Hit");
-                }
-            }
-            //return moveDirection;
-        }
-        else
-        {
-            return Vector3.zero;
-        }
-
-        Vector3 averageVelocity = totalVelocity / _boids.Count;
-
-        return averageVelocity;
-
-    }
-
-    private Vector3 rule2Cohesion(boid _boidj, List<boid> _boids)
+    private Vector3 Seperation(boid _boidj, List<boid> _boids)
     {
         Vector3 c = Vector3.zero;
 
@@ -174,23 +98,6 @@ public class BoidManager2 : MonoBehaviour
         }
 
         return c / SeperationStrenght;
-    }
-    private Vector3 rule3Allignment(boid _boidj, List<boid> _boids)
-    {
-        Vector3 perceivedVelocity = new Vector3(0, 0, 0);
-
-        foreach (boid boid in _boids)
-        {
-            if (boid != _boidj)
-            {
-                perceivedVelocity = perceivedVelocity + boid.Velocity;
-            }
-
-        }
-        perceivedVelocity = perceivedVelocity / (_boids.Count - 1);
-
-        //return perceivedCenterOfMass;
-        return (perceivedVelocity - _boidj.Velocity) / allignment;
     }
     private Vector3 Allignment(boid _boidj, List<boid> _boids)
     {
@@ -212,9 +119,6 @@ public class BoidManager2 : MonoBehaviour
         //return perceivedCenterOfMass;
         return perceivedAllignment / allignment;
     }
-
-
-
     private Vector3 CalculateRandomSpawn()
     {
         float randomX = Random.Range((CenterSpawn.position.x - SpawnRange), (CenterSpawn.position.x + SpawnRange));
@@ -224,42 +128,24 @@ public class BoidManager2 : MonoBehaviour
 
         return spawnPos;
     }
-
-    private Vector3 CalculateAverageMass(boid _boid, List<boid> boidList)
-    {
-        Vector3 totalBoidsPos = new Vector3(0, 0, 0);
-        for (int i = 0; i < boidList.Count; i++)
-        {
-            Transform neiboursTransforms = boidList[i].transform;
-            Vector3 neigbourPos = neiboursTransforms.position;
-            totalBoidsPos = totalBoidsPos + neigbourPos;
-        }
-
-        Vector3 c = totalBoidsPos / (boidList.Count);
-        MassOfCenterPrefab.position = c;
-
-        return c;
-    }
     private Vector3 CalculatePerceivedAverageMass(boid _boidJ, List<boid> boidList)
     {
-        Vector3 perceivedCenterOfMass = new Vector3(0, 0, 0);
+        Vector3 perceivedCenterOfMass = Vector3.zero;
 
         foreach (boid boid in boidList)
         {
             if (boid != _boidJ)
             {
-                perceivedCenterOfMass = perceivedCenterOfMass + boid.transform.position;
+                perceivedCenterOfMass += boid.transform.position;
             }
-
         }
-        perceivedCenterOfMass = perceivedCenterOfMass / (boidList.Count - 1);
+        perceivedCenterOfMass /= (boidList.Count - 1);
         PerceivedMassOfCenterPrefab.position = perceivedCenterOfMass;
         //Debug.Log(perceivedCenterOfMass);
 
         //return perceivedCenterOfMass;
         return (perceivedCenterOfMass - _boidJ.transform.position) / cohesion;
     }
-
     private Vector3 KeepboidInBoundary(boid _boid)
     {
         Vector3 boidPos = _boid.transform.position;
@@ -300,7 +186,6 @@ public class BoidManager2 : MonoBehaviour
         return vector;
 
     }
-
     private void avoidObstable(boid _boid)
     {
         RaycastHit hit;

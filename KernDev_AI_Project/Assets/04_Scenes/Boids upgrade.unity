@@ -750,7 +750,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1270606239}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fcea0a6fba6dfb94c888c6b15de63a78, type: 3}
   m_Name: 
@@ -770,6 +770,9 @@ MonoBehaviour:
   NeighboursRadius: 3
   SeperationsStrenght: 0.18
   SperationRadius: 2
+  BoidList: []
+  c: {x: 0, y: 0, z: 0}
+  totalBoidsPos: {x: 0, y: 0, z: 0}
 --- !u!114 &1270606242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -788,6 +791,8 @@ MonoBehaviour:
   - {fileID: 0}
   Center: {fileID: 683884229}
   speed: 3
+  c: {x: 0, y: 0, z: 0}
+  totalBoidsPos: {x: 0, y: 0, z: 0}
 --- !u!114 &1270606243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -795,7 +800,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1270606239}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f1c777a00f140f4bba17dec607c965c, type: 3}
   m_Name: 
