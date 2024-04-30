@@ -80,17 +80,14 @@ public class BoidManager2 : MonoBehaviour
         Vector3 v3;
         Vector3 v4;
 
-
-
-
         foreach (boid boid in BoidList)
         {
             Vector3 centerOfMass = CalculateAverageMass(boid, BoidList);
             Vector3 perceivedCenterOfMass = CalculatePerceivedAverageMass(boid, BoidList);
 
             v1 = perceivedCenterOfMass;
-            v2 = rule2(boid, BoidList);
-            v3 = rule3(boid, BoidList);
+            v2 = rule2Cohesion(boid, BoidList);
+            v3 = Allignment(boid, BoidList);
             v4 = KeepboidInBoundary(boid);
             avoidObstable(boid);
             //transform.position += transform.TransformDirection(perceivedCenterOfMass) * 5 * Time.deltaTime;
@@ -159,7 +156,7 @@ public class BoidManager2 : MonoBehaviour
 
     }
 
-    private Vector3 rule2(boid _boidj, List<boid> _boids)
+    private Vector3 rule2Cohesion(boid _boidj, List<boid> _boids)
     {
         Vector3 c = Vector3.zero;
 
@@ -178,7 +175,7 @@ public class BoidManager2 : MonoBehaviour
 
         return c / SeperationStrenght;
     }
-    private Vector3 rule3(boid _boidj, List<boid> _boids)
+    private Vector3 rule3Allignment(boid _boidj, List<boid> _boids)
     {
         Vector3 perceivedVelocity = new Vector3(0, 0, 0);
 
@@ -194,6 +191,26 @@ public class BoidManager2 : MonoBehaviour
 
         //return perceivedCenterOfMass;
         return (perceivedVelocity - _boidj.Velocity) / allignment;
+    }
+    private Vector3 Allignment(boid _boidj, List<boid> _boids)
+    {
+        Vector3 perceivedAllignment = Vector3.zero;
+
+        foreach (boid boid in _boids)
+        {
+            if (boid != _boidj)
+            {
+                perceivedAllignment += boid.transform.forward;
+            }
+
+        }
+
+        perceivedAllignment /= _boids.Count;
+
+        Debug.Log(perceivedAllignment);
+
+        //return perceivedCenterOfMass;
+        return perceivedAllignment / allignment;
     }
 
 
@@ -292,14 +309,10 @@ public class BoidManager2 : MonoBehaviour
         {
             Debug.DrawRay(_boid.transform.position, _boid.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             _boid.transform.Rotate(0.0f, turnStrenght, 0.0f, Space.World);
-
-            Debug.Log("Did Hit");
-
         }
         else
         {
             Debug.DrawRay(_boid.transform.position, _boid.transform.TransformDirection(Vector3.forward) * 1000, Color.white);
-            Debug.Log("Did not Hit");
         }
     }
 

@@ -21,9 +21,9 @@ public class boid : MonoBehaviour
     void Update()
     {
         //transform.position = transform.position + Vector3.fwd * 5 * Time.deltaTime;
-        transform.position += transform.TransformDirection(Vector3.fwd) * 5 * Time.deltaTime;
+        //transform.position += transform.TransformDirection(Vector3.fwd) * 5 * Time.deltaTime;
 
-        Velocity = rb.velocity;
+        //Velocity = rb.velocity;
         //rb.AddForce(Vector3.fwd * 1/10);
     }
 
