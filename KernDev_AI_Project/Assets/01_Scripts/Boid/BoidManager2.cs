@@ -44,6 +44,9 @@ public class BoidManager2 : MonoBehaviour
     private Vector3 c = new Vector3(0, 0, 0); //CenterOfMass
     private Vector3 totalBoidsPos = new Vector3(0, 0, 0); //CenterOfMass
 
+    private Vector3 currentVelocity;
+    private float smoothTime = 0.5f;
+
 
 
     // Start is called before the first frame update
@@ -77,7 +80,9 @@ public class BoidManager2 : MonoBehaviour
             avoidObstable(boid);
 
             Vector3 newDirection = v1 + v2 + v3 + v4;
-            boid.transform.position = boid.transform.position + newDirection;
+            //newDirection = Vector3.SmoothDamp(boid.transform.forward, newDirection, ref currentVelocity, smoothTime);
+            boid.transform.position += newDirection;
+            boid.transform.rotation = Quaternion.LookRotation(newDirection);
         }
     }
     private Vector3 Seperation(boid _boidj, List<boid> _boids)
@@ -114,7 +119,7 @@ public class BoidManager2 : MonoBehaviour
 
         perceivedAllignment /= _boids.Count;
 
-        Debug.Log(perceivedAllignment);
+        //Debug.Log(perceivedAllignment);
 
         //return perceivedCenterOfMass;
         return perceivedAllignment / allignment;

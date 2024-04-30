@@ -113,9 +113,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70f33e78ee78e164cbf1e4a0945c82a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collider: {fileID: 0}
-  Velocity: {x: 0, y: 0, z: 0}
-  Force: 10
 --- !u!54 &8556223404588198338
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -149,7 +146,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5173774037380125243
 Transform:
   m_ObjectHideFlags: 0
